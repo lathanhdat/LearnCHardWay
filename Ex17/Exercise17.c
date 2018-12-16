@@ -55,6 +55,10 @@ void Database_load(struct Connection *conn)
 
 struct Connection *Database_open(const char *filename,char mode )
 {
+    /*
+        After malloc called, OS will uses internal function to register
+        that piece of memory and then returns a pointer to it.
+    */
     struct Connection *conn = malloc(sizeof(struct Connection));
     if (!conn)
         die("Memory error");
@@ -122,6 +126,9 @@ void Database_set(struct Connection *conn,int id,const char *name,const char *em
     addr->set = 1;
     char *res = strncpy(addr->name, name, MAX_DATA);
     if (!res)
+        die("Name copy failed");
+    res = strncpy(addr->email, email, MAX_DATA);
+    if (!res)
         die("Email copy failed");
 }
 
@@ -158,7 +165,9 @@ void Database_list(struct Connection *conn)
     }
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
+//This const will make warning
+//int main(int argc, char const *argv[])
 {
     if (argc <3)
         die("USAGE : ex17 <dbfile> <action> <params>");
@@ -172,7 +181,8 @@ int main(int argc, char const *argv[])
         id = atoi(argv[3]);
     if (id >= MAX_ROWS)
         die ("There's not that many record.");
-    return 0;
+    //This line make me spent lots of time.
+    //return 0;
 
     switch (action)
     {
